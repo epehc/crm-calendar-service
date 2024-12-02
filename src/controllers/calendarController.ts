@@ -1,11 +1,12 @@
 import { Request, Response } from "express";
 import { createSharedCalendarEvent, createPersonalCalendarEvent } from "../services/googleCalendar";
 
-export const createSharedEvent = async (req: Request, res: Response) => {
+export const createSharedEvent = async (req: Request, res: Response): Promise<void> => {
     const { summary, description, startTime, endTime, attendees } = req.body;
 
     if (!summary || !startTime || !endTime) {
-        return res.status(400).json({ error: "Missing required fields." });
+        res.status(400).json({ error: "Missing required fields." });
+        return;
     }
 
     const event = {
@@ -25,11 +26,12 @@ export const createSharedEvent = async (req: Request, res: Response) => {
     }
 };
 
-export const createPersonalEvent = async (req: Request, res: Response) => {
+export const createPersonalEvent = async (req: Request, res: Response): Promise<void> => {
     const { accessToken, summary, description, startTime, endTime, attendees } = req.body;
 
     if (!accessToken || !summary || !startTime || !endTime) {
-        return res.status(400).json({ error: "Missing required fields." });
+        res.status(400).json({ error: "Missing required fields." });
+        return;
     }
 
     const event = {

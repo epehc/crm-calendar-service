@@ -1,9 +1,8 @@
 import { Router } from "express";
-import { createSharedEvent, createPersonalEvent } from "../controllers/calendarController";
+import { createEvent } from "../controllers/calendarController";
 
 const router = Router();
 
-router.post("/shared/event", createSharedEvent);
-router.post("/personal/event", createPersonalEvent);
+router.post("/event", createEvent);
 
 export default router;

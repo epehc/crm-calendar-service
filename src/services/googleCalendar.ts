@@ -1,47 +1,40 @@
 import { google } from "googleapis";
-import { JWT } from "google-auth-library";
+import { createGoogleAuth } from "./googleAuth";
 
-// Configure Service Account Auth for the Shared Calendar
-const serviceAccountAuth = new JWT({
-    keyFile: process.env.GOOGLE_CALENDAR_KEY_FILE!,
-    scopes: ["https://www.googleapis.com/auth/calendar"],
-});
-
-// Configure OAuth for Individual Calendars
-const oauth2Client = new google.auth.OAuth2(
-    process.env.GOOGLE_CLIENT_ID!,
-    process.env.GOOGLE_CLIENT_SECRET!,
-    process.env.REDIRECT_URI!
-);
-
-const calendar = google.calendar({ version: "v3", auth: serviceAccountAuth });
-
-export const createSharedCalendarEvent = async (event: any): Promise<any> => {
-    try {
-        const response = await calendar.events.insert({
-            calendarId: process.env.SHARED_CALENDAR_ID!,
-            requestBody: event,
-        });
-        return response.data;
-    } catch (error: any) {
-        throw new Error(`Failed to create shared calendar event: ${error.message}`);
+export const createCalendarEvent = async (
+    recruiterEmail: string,
+    eventDetails: {
+        summary: string;
+        description: string;
+        startTime: string;
+        endTime: string;
+        candidateEmail?: string;
     }
-};
-
-export const createPersonalCalendarEvent = async (
-    accessToken: string,
-    event: any
 ): Promise<any> => {
     try {
-        oauth2Client.setCredentials({ access_token: accessToken });
+        // Create auth client impersonating the recruiter
+        const auth = createGoogleAuth(recruiterEmail);
 
-        const personalCalendar = google.calendar({ version: "v3", auth: oauth2Client });
-        const response = await personalCalendar.events.insert({
-            calendarId: "primary",
-            requestBody: event,
+        // Initialize Google Calendar API
+        const calendar = google.calendar({ version: "v3", auth });
+
+        // Create the event
+        const response = await calendar.events.insert({
+            calendarId: process.env.SHARED_CALENDAR_ID!,
+            requestBody: {
+                summary: eventDetails.summary,
+                description: eventDetails.description,
+                start: { dateTime: eventDetails.startTime, timeZone: "America/Guatemala" },
+                end: { dateTime: eventDetails.endTime, timeZone: "America/Guatemala" },
+                attendees: [
+                    { email: recruiterEmail }, // Recruiter as an invitee
+                    ...(eventDetails.candidateEmail ? [{ email: eventDetails.candidateEmail }] : []), // Candidate if provided
+                ],
+            },
         });
+
         return response.data;
     } catch (error: any) {
-        throw new Error(`Failed to create personal calendar event: ${error.message}`);
+        throw new Error(`Failed to create calendar event: ${error.message}`);
     }
 };

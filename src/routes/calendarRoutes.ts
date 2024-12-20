@@ -6,6 +6,7 @@ import { UserRole } from "@epehc/sharedutilities/enums/userRole";
 import { authenticateJWT } from "@epehc/sharedutilities/middlewares/authMiddleware"
 */
 import {authenticateJWT} from "../middlewares/authMiddleware";
+import {body, param} from "express-validator";
 
 
 const router = Router();
@@ -50,7 +51,19 @@ const logUserState = (req: Request, res: Response, next: NextFunction) => {
  *       500:
  *         description: Internal server error
  */
-router.post("/shared/event", authenticateJWT, logUserState, authorize([UserRole.Reclutador, UserRole.Admin]), createEvent);
+router.post("/shared/event",
+    authenticateJWT,
+    logUserState,
+    authorize([UserRole.Reclutador, UserRole.Admin]),
+    [
+        body("recruiterEmail").isEmail().withMessage("Recruiter email must be a valid email"),
+        body("summary").notEmpty().withMessage("Summary is required"),
+        body("description").notEmpty().withMessage("Description is required"),
+        body("startTime").isISO8601().withMessage("Start time must be a valid ISO 8601 date"),
+        body("endTime").isISO8601().withMessage("End time must be a valid ISO 8601 date"),
+        body("candidateEmail").optional().isEmail().withMessage("Candidate email must be a valid email"),
+    ],
+    createEvent);
 
 /**
  * @swagger
@@ -78,6 +91,9 @@ router.get(
     "/shared/event/:eventId",
     authenticateJWT,
     authorize([UserRole.Reclutador, UserRole.Admin]),
+    [
+        param("eventId").notEmpty().withMessage("Event ID is required"),
+    ],
     getEvent
 );
 
@@ -126,6 +142,15 @@ router.patch(
     "/shared/event/:eventId",
     authenticateJWT,
     authorize([UserRole.Reclutador, UserRole.Admin]),
+    [
+        param("eventId").notEmpty().withMessage("Event ID is required"),
+        body("recruiterEmail").isEmail().withMessage("Recruiter email must be a valid email"),
+        body("summary").optional().notEmpty().withMessage("Summary is required"),
+        body("description").optional().notEmpty().withMessage("Description is required"),
+        body("startTime").optional().isISO8601().withMessage("Start time must be a valid ISO 8601 date"),
+        body("endTime").optional().isISO8601().withMessage("End time must be a valid ISO 8601 date"),
+        body("candidateEmail").optional().isEmail().withMessage("Candidate email must be a valid email"),
+    ],
     updateEvent
 );
 
@@ -153,6 +178,9 @@ router.delete(
     "/shared/event/:eventId",
     authenticateJWT,
     authorize([UserRole.Reclutador, UserRole.Admin]),
+    [
+        param("eventId").notEmpty().withMessage("Event ID is required"),
+    ],
     deleteEvent
 );
 

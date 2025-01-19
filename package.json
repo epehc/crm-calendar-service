@@ -28,7 +28,7 @@
     "winston": "^3.17.0"
   },
   "devDependencies": {
-    "@epehc/sharedutilities": "^1.1.5",
+    "@epehc/sharedutilities": "^1.1.8",
     "@types/express": "^5.0.0",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "^22.9.0",

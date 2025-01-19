@@ -1,3 +1,6 @@
+/// <reference path="../node_modules/@epehc/sharedutilities/types/express.d.ts" />
+
+
 import dotenv from "dotenv";
 import express from "express";
 import bodyParser from "body-parser";

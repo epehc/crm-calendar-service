@@ -1,5 +1,5 @@
 import {Response } from "express";
-import { Request } from "@epehc/sharedutilities/types/express";
+import {Request} from "@epehc/sharedutilities/types/express";
 import {
     createCalendarEvent,
     deleteCalendarEvent,
@@ -15,7 +15,7 @@ export const getEvent = async (req: Request, res: Response) => {
     const recruiterEmail = req.user?.email;
 
     try {
-        const event = await getCalendarEvent(recruiterEmail, eventId);
+        const event = await getCalendarEvent(<string>recruiterEmail, eventId);
         if (!event) {
             logger.error("No se pudo en contrar el evento");
             res.status(404).json({ error: "Event not found." });
@@ -40,7 +40,7 @@ export const createEvent = async (req: Request, res: Response) => {
     }
 
     const {summary, description, startTime, endTime, candidateEmail } = req.body;
-    const recruiterEmail = req.user.email;
+    const recruiterEmail = req.user?.email;
 
     console.log('recruiterEmail: ', recruiterEmail);
 
@@ -51,7 +51,7 @@ export const createEvent = async (req: Request, res: Response) => {
     }
 
     try {
-        const event = await createCalendarEvent(recruiterEmail, {
+        const event = await createCalendarEvent(<string>recruiterEmail, {
             summary,
             description,
             startTime,
@@ -74,7 +74,7 @@ export const updateEvent = async (req: Request, res: Response) => {
     const {summary, description, startTime, endTime, candidateEmail } = req.body;
 
     try {
-        const updatedEvent = await updateCalendarEvent(recruiterEmail, eventId , {
+        const updatedEvent = await updateCalendarEvent(<string>recruiterEmail, eventId , {
             summary,
             description,
             startTime,
@@ -102,7 +102,7 @@ export const deleteEvent = async (req: Request, res: Response) => {
     const recruiterEmail = req.user?.email;
 
     try {
-        const deleted = await deleteCalendarEvent(recruiterEmail, eventId);
+        const deleted = await deleteCalendarEvent(<string>recruiterEmail, eventId);
         if (!deleted) {
             logger.error("Event not found.");
             res.status(404).json({ error: "Event not found." });

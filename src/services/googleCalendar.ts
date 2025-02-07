@@ -52,37 +52,45 @@ export const updateCalendarEvent = async (
 };
 
 export const createCalendarEvent = async (
-    recruiterEmail: string,
+    organizer: string,
     eventDetails: {
         summary: string;
         description: string;
         startTime: string;
         endTime: string;
-        candidateEmail?: string;
+        attendees?: string;
     }
 ): Promise<any> => {
     try {
         // Create auth client impersonating the recruiter
-        const auth = createGoogleAuth(recruiterEmail);
+        const auth = createGoogleAuth(organizer);
 
         // Initialize Google Calendar API
         const calendar = google.calendar({ version: "v3", auth });
 
         const event = {
+            organizer: {email: organizer},
             summary: eventDetails.summary,
             description: eventDetails.description,
             start: { dateTime: eventDetails.startTime, timeZone: "America/Guatemala" },
             end: { dateTime: eventDetails.endTime, timeZone: "America/Guatemala" },
             attendees: [
                 /*{ email: recruiterEmail },*/
-                ...(eventDetails.candidateEmail ? [{ email: eventDetails.candidateEmail }] : []),
+                ...(eventDetails.attendees ? [{ email: eventDetails.attendees }] : []),
             ],
+            conferenceData: {
+                createRequest: {
+                    requestId: Math.random().toString(36).substring(2, 15),
+                    conferenceSolutionKey: {type: "hangoutsMeet"},
+                }
+            }
         }
 
         // Create the event
         const response = await calendar.events.insert({
             calendarId: process.env.SHARED_CALENDAR_ID!,
-            requestBody: event
+            requestBody: event,
+            conferenceDataVersion: 1 //To create a Google Meet link
         });
 
 

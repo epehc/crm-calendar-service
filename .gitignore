@@ -4,3 +4,9 @@
 service-account.json
 
 .log
+
+/node_modules
+/.idea
+/credentials
+
+*.js

@@ -2,9 +2,6 @@ import {NextFunction, Router,Request, Response} from "express";
 import {createEvent, deleteEvent, getEvent, updateEvent} from "../controllers/calendarController";
 import { authorize } from "@epehc/sharedutilities/middlewares/authorize";
 import { UserRole } from "@epehc/sharedutilities/enums/userRole";
-/*
-import { authenticateJWT } from "@epehc/sharedutilities/middlewares/authMiddleware"
-*/
 import {authenticateJWT} from "../middlewares/authMiddleware";
 import {body, param} from "express-validator";
 
@@ -56,12 +53,12 @@ router.post("/shared/event",
     logUserState,
     authorize([UserRole.Reclutador, UserRole.Admin]),
     [
-        body("recruiterEmail").isEmail().withMessage("Recruiter email must be a valid email"),
+        body("organizer").isEmail().withMessage("Recruiter email must be a valid email"),
         body("summary").notEmpty().withMessage("Summary is required"),
         body("description").notEmpty().withMessage("Description is required"),
         body("startTime").isISO8601().withMessage("Start time must be a valid ISO 8601 date"),
         body("endTime").isISO8601().withMessage("End time must be a valid ISO 8601 date"),
-        body("candidateEmail").optional().isEmail().withMessage("Candidate email must be a valid email"),
+        body("attendee").optional().isEmail().withMessage("Candidate email must be a valid email"),
     ],
     createEvent);
 

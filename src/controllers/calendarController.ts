@@ -1,4 +1,4 @@
-import {Response } from "express";
+import {/*Request,*/ Response } from "express";
 import {Request} from "@epehc/sharedutilities/types/express";
 import {
     createCalendarEvent,
@@ -32,31 +32,30 @@ export const getEvent = async (req: Request, res: Response) => {
 
 
 export const createEvent = async (req: Request, res: Response) => {
-
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        logger.error('Error al asignar roles: ', errors);
+        logger.error('Error al validar crear evento: ', errors);
         res.status(400).json({ errors: errors.array() });
     }
 
-    const {summary, description, startTime, endTime, candidateEmail } = req.body;
-    const recruiterEmail = req.user?.email;
+    const {summary, description, startTime, endTime, organizer, attendees } = req.body;
 
-    console.log('recruiterEmail: ', recruiterEmail);
+    logger.info('Creando evento: ', req.body);
+    logger.info('Organizador: ', organizer, ', summary: ', summary, ', startTime: ', startTime, ', endTime: ', endTime);
 
-    if (/*!recruiterEmail ||*/ !summary || !startTime || !endTime) {
-        logger.error('Error al crear evento: ', errors);
+    if (!organizer || !summary || !startTime || !endTime) {
+        logger.error('Error al crear evento debido a la falta de parametros: ', errors);
         res.status(400).json({ error: "Missing required fields." });
         return
     }
 
     try {
-        const event = await createCalendarEvent(<string>recruiterEmail, {
+        const event = await createCalendarEvent(<string>organizer, {
             summary,
             description,
             startTime,
             endTime,
-            candidateEmail,
+            attendees,
         });
 
         logger.info('Evento creado: ', event);

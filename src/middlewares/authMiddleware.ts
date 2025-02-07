@@ -19,8 +19,6 @@ export const authenticateJWT = (req: Request, res: Response, next: NextFunction)
             roles: string[]
         };
 
-        //console.log("decoded token: ", decoded);
-
         // Validate roles to ensure they match the UserRole enum
         const validatedRoles = decoded.roles.filter((role) =>
             Object.values(UserRole).includes(role as UserRole)
@@ -31,8 +29,6 @@ export const authenticateJWT = (req: Request, res: Response, next: NextFunction)
             email: decoded.email,
             roles: validatedRoles, // Only valid UserRole values
         };
-
-        //console.log("req.user: ", req.user);
 
         next();
     } catch (error) {

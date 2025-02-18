@@ -9,4 +9,12 @@ service-account.json
 /.idea
 /credentials
 
-*.js
+/dist
+
+/src/*/*.js
+
+/coverage
+
+/logs
+
+/.idea

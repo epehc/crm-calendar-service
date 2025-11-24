@@ -1,9 +1,9 @@
-import {NextFunction, Router,Request, Response} from "express";
-import {createEvent, deleteEvent, getEvent, updateEvent} from "../controllers/calendarController";
-import { authorize } from "@epehc/sharedutilities/middlewares/authorize";
 import { UserRole } from "@epehc/sharedutilities/enums/userRole";
-import {authenticateJWT} from "../middlewares/authMiddleware";
-import {body, param} from "express-validator";
+import { authorize } from "@epehc/sharedutilities/middlewares/authorize";
+import { NextFunction, Request, Response, Router } from "express";
+import { body, param } from "express-validator";
+import { createEvent, deleteEvent, getEvent, updateEvent } from "../controllers/calendarController";
+import { authenticateJWT } from "../middlewares/authMiddleware";
 
 
 const router = Router();
@@ -58,7 +58,7 @@ router.post("/shared/event",
         body("description").notEmpty().withMessage("Description is required"),
         body("startTime").isISO8601().withMessage("Start time must be a valid ISO 8601 date"),
         body("endTime").isISO8601().withMessage("End time must be a valid ISO 8601 date"),
-        body("attendee").optional().isEmail().withMessage("Candidate email must be a valid email"),
+        body("attendees").optional().isEmail().withMessage("Candidate email must be a valid email"),
     ],
     createEvent);
 

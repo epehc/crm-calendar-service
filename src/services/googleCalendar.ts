@@ -58,7 +58,7 @@ export const createCalendarEvent = async (
         description: string;
         startTime: string;
         endTime: string;
-        attendees?: string;
+        attendees?: string | string[];
     }
 ): Promise<any> => {
     try {
@@ -68,16 +68,18 @@ export const createCalendarEvent = async (
         // Initialize Google Calendar API
         const calendar = google.calendar({ version: "v3", auth });
 
+        const attendeesEmails = Array.isArray(eventDetails.attendees)
+            ? eventDetails.attendees
+            : eventDetails.attendees
+                ? [eventDetails.attendees]
+                : [];
+
         const event = {
-            organizer: {email: organizer},
             summary: eventDetails.summary,
             description: eventDetails.description,
             start: { dateTime: eventDetails.startTime, timeZone: "America/Guatemala" },
             end: { dateTime: eventDetails.endTime, timeZone: "America/Guatemala" },
-            attendees: [
-                /*{ email: recruiterEmail },*/
-                ...(eventDetails.attendees ? [{ email: eventDetails.attendees }] : []),
-            ],
+            attendees: attendeesEmails.map(email => ({ email })),
             conferenceData: {
                 createRequest: {
                     requestId: Math.random().toString(36).substring(2, 15),
@@ -90,7 +92,8 @@ export const createCalendarEvent = async (
         const response = await calendar.events.insert({
             calendarId: process.env.SHARED_CALENDAR_ID!,
             requestBody: event,
-            conferenceDataVersion: 1 //To create a Google Meet link
+            conferenceDataVersion: 1, //To create a Google Meet link
+            sendUpdates: "all",
         });
 
 

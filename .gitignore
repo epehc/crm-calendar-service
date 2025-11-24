@@ -18,3 +18,5 @@ service-account.json
 /logs
 
 /.idea
+
+package-lock.json
